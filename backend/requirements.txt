@@ -1,0 +1,6 @@
+fastapi
+pymupdf
+ollama
+ipykernel # dev-dependency
+python-dotenv
+google-genai
