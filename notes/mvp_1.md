@@ -1,0 +1,3 @@
+- A local learning Assistant with minimal UI that gathers pre-requisites and create a knowledge tree.
+- A docker container for one click setup
+- Test taker
