@@ -1,0 +1,31 @@
+services:
+  backend:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - opensearch
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/data
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ola
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    ports:
+      - "5433:5433"
+
+  opensearch:
+    image: opensearchproject/opensearch:2.15.0
+    environment:
+      - discovery.type=single-node
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+      - DISABLE_SECURITY_PLUGIN=true
+    ports:
+      - "9200:9200"
+

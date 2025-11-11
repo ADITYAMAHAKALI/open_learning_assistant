@@ -17,3 +17,9 @@ Learning complex topics and internalising them is hard, common challenges faced 
 - [MVP Phase I](./notes/mvp_1.md)
 - [MVP Phase II](./notes/mvp_2.md)
 - [Prod](./notes/prod)
+
+## Tech Stack
+
+- Python + FastAPI for backend
+- Next js as frontend(tailwind + shadcn)
+- postgresql DB(local container)

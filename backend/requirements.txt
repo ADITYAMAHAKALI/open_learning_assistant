@@ -1,6 +1,29 @@
 fastapi
+uvicorn[standard]
+
+# DB
+SQLAlchemy>=2.0
+psycopg2-binary
+
+# Vector store
+opensearch-py
+
+# File uploads
+python-multipart
+
+# LLM & content
 pymupdf
 ollama
-ipykernel # dev-dependency
-python-dotenv
 google-genai
+
+# Config & env
+python-dotenv
+pydantic
+pydantic-settings
+
+# Dev
+ipykernel  # dev-dependency
+
+# Security
+passlib[bcrypt]
+python-jose[cryptography]
