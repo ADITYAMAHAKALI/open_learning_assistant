@@ -27,3 +27,9 @@ ipykernel  # dev-dependency
 # Security
 passlib[bcrypt]
 python-jose[cryptography]
+
+# Testing
+pytest
+pytest-asyncio
+httpx
+

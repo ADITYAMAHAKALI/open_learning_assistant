@@ -1,0 +1,82 @@
+# tests/conftest.py
+import tempfile
+from typing import Generator
+
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.pool import StaticPool
+
+from app.main import create_app
+from app.db.base import Base
+from app.db.session import get_db
+
+
+TEST_DATABASE_URL = "sqlite://"
+
+
+@pytest.fixture(scope="session")
+def engine():
+    engine = create_engine(
+        TEST_DATABASE_URL,
+        future=True,
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    Base.metadata.create_all(bind=engine)
+    return engine
+
+
+@pytest.fixture(scope="session")
+def SessionTest(engine) -> sessionmaker:
+    return sessionmaker(
+        autocommit=False,
+        autoflush=False,
+        bind=engine,
+    )
+
+
+@pytest.fixture()
+def db(SessionTest) -> Generator[Session, None, None]:
+    """
+    Per-test DB session.
+
+    We explicitly wipe all tables after each test so tests
+    don't leak data into each other.
+    """
+    session: Session = SessionTest()
+    try:
+        yield session
+        session.commit()
+    finally:
+        # Clean up all rows from all tables between tests
+        for table in reversed(Base.metadata.sorted_tables):
+            session.execute(table.delete())
+        session.commit()
+        session.close()
+
+
+@pytest.fixture()
+def client(db: Session) -> Generator[TestClient, None, None]:
+    """
+    FastAPI TestClient wired to the in-memory SQLite test DB.
+    """
+    app = create_app()
+
+    def _override_get_db():
+        try:
+            yield db
+        finally:
+            pass
+
+    app.dependency_overrides[get_db] = _override_get_db
+
+    with TestClient(app) as c:
+        yield c
+
+
+@pytest.fixture()
+def temp_dir() -> Generator[str, None, None]:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        yield tmpdir

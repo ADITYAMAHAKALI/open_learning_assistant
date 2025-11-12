@@ -18,7 +18,7 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
     ports:
-      - "5433:5433"
+      - "5432:5432"
 
   opensearch:
     image: opensearchproject/opensearch:2.15.0

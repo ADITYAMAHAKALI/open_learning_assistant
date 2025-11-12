@@ -15,12 +15,21 @@ class SignupRequest(BaseModel):
     name: str | None = None
 
 
-class Token(BaseModel):
+class TokenPair(BaseModel):
     access_token: str
-    token_type: str
+    refresh_token: str
+    token_type: str = "bearer"
 
 
-@router.post("/signup", response_model=Token)
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+
+class LogoutRequest(BaseModel):
+    refresh_token: str
+
+
+@router.post("/signup", response_model=TokenPair)
 def signup(
     payload: SignupRequest,
     auth_service: AuthService = Depends(get_auth_service),
@@ -37,11 +46,11 @@ def signup(
             detail="User with this email already exists",
         )
 
-    access_token = auth_service.create_access_token(user_id=user.id)
-    return Token(access_token=access_token, token_type="bearer")
+    tokens = auth_service.create_tokens(user_id=user.id)
+    return tokens
 
 
-@router.post("/login", response_model=Token)
+@router.post("/login", response_model=TokenPair)
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     auth_service: AuthService = Depends(get_auth_service),
@@ -58,5 +67,29 @@ def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token = auth_service.create_access_token(user_id=user.id)
-    return Token(access_token=access_token, token_type="bearer")
+    tokens = auth_service.create_tokens(user_id=user.id)
+    return tokens
+
+
+@router.post("/refresh", response_model=TokenPair)
+def refresh_tokens(
+    payload: RefreshRequest,
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    try:
+        tokens = auth_service.refresh_tokens(payload.refresh_token)
+        return tokens
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(e),
+        )
+
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+def logout(
+    payload: LogoutRequest,
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    auth_service.revoke_refresh_token(payload.refresh_token)
+    return

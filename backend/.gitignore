@@ -1,2 +1,6 @@
 env
 .env
+data
+.pytest_cache
+__pycahce__
+tests/__pycache__

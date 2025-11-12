@@ -78,7 +78,8 @@ async def get_current_user(
             algorithms=[settings.JWT_ALGORITHM],
         )
         sub = payload.get("sub")
-        if sub is None:
+        token_type = payload.get("type")
+        if sub is None or token_type != "access":
             raise credentials_exception
         user_id = int(sub)
     except (JWTError, ValueError):
