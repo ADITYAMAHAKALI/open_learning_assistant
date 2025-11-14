@@ -30,12 +30,13 @@ export async function apiGet(path: string, init?: RequestInit) {
     },
   });
   if (!res.ok) {
-    throw new Error(await res.text());
+    const text = await res.text();
+    throw new Error(`${res.status}: ${text || res.statusText}`);
   }
   return res.json();
 }
 
-export async function apiPost(path: string, body: any, init?: RequestInit) {
+export async function apiPost(path: string, body: unknown, init?: RequestInit) {
   const res = await fetch(`${API_BASE}${path}`, {
     method: "POST",
     ...init,
@@ -47,7 +48,8 @@ export async function apiPost(path: string, body: any, init?: RequestInit) {
     body: JSON.stringify(body),
   });
   if (!res.ok) {
-    throw new Error(await res.text());
+    const text = await res.text();
+    throw new Error(`${res.status}: ${text || res.statusText}`);
   }
   return res.json();
 }

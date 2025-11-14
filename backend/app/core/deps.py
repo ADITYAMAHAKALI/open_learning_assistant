@@ -26,6 +26,14 @@ from app.services_impl.materials_service_impl import MaterialsServiceImpl
 from app.services.auth_service import AuthService
 from app.services_impl.auth_service_impl import AuthServiceImpl
 
+from app.services.prereq_service import PrereqService
+from app.services_impl.prereq_llm_impl import PrereqLLMImpl
+
+from app.services.session_service import SessionService
+from app.services_impl.session_service_impl import SessionServiceImpl
+
+from app.adapters.wiki.wikipedia_client import WikipediaClient
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
@@ -113,4 +121,26 @@ def get_materials_service(
         db=db,
         vector_store=vector_store,
         storage=storage,
+    )
+
+
+def get_wikipedia_client() -> WikipediaClient:
+    return WikipediaClient()
+
+
+def get_prereq_service(
+    llm: LLMClient = Depends(get_llm_client),
+) -> PrereqService:
+    return PrereqLLMImpl(llm=llm)
+
+
+def get_session_service(
+    db: Session = Depends(get_db),
+    prereq_service: PrereqService = Depends(get_prereq_service),
+    wiki_client: WikipediaClient = Depends(get_wikipedia_client),
+) -> SessionService:
+    return SessionServiceImpl(
+        db=db,
+        prereq_service=prereq_service,
+        wiki_client=wiki_client,
     )
