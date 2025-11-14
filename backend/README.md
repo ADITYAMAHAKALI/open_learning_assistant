@@ -40,6 +40,19 @@ Rough data flow for MVP:
    - RAG service retrieves relevant chunks (OpenSearch)
    - LLM generates an answer + follow-up questions
 
+### Learning sessions & prerequisite graphs
+
+The backend can orchestrate a structured learning session that combines multiple
+uploaded materials.
+
+- `POST /api/v1/learning/sessions` – create a multi-material session, trigger
+  prerequisite discovery via the configured LLM provider, and enrich topics with
+  Wikipedia summaries.
+- `GET /api/v1/learning/sessions` – list prior sessions for the authenticated
+  learner.
+- `GET /api/v1/learning/sessions/{id}` – fetch the full prerequisite tree for a
+  specific session.
+
 ---
 
 ## Tech Stack
