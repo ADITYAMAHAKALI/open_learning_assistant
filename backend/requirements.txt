@@ -15,6 +15,7 @@ python-multipart
 pymupdf
 ollama
 google-genai
+httpx
 
 # Config & env
 python-dotenv

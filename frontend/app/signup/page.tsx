@@ -54,7 +54,7 @@ export default function SignupPage() {
         localStorage.setItem("token_type", data.token_type);
       }
 
-      router.push("/");
+      router.push("/learning");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);

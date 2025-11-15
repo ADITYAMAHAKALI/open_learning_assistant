@@ -9,7 +9,9 @@ export default function Home() {
           Open Learning Assistant
         </h1>
         <p className="text-sm text-neutral-600 mb-6">
-          Welcome! Please login or create an account to continue.
+          Welcome! Login or create an account to build learning sessions that
+          combine multiple materials, prerequisite trees, and Wikipedia-powered
+          context.
         </p>
 
         <div className="flex gap-3">
@@ -24,6 +26,15 @@ export default function Home() {
             className="flex-1 text-center py-2.5 rounded-lg border border-neutral-300 text-sm font-medium hover:bg-neutral-50 transition"
           >
             Sign up
+          </Link>
+        </div>
+
+        <div className="mt-6 text-center">
+          <Link
+            href="/learning"
+            className="text-xs text-neutral-500 underline underline-offset-4 hover:text-neutral-800"
+          >
+            Already logged in? Jump to your learning workspace →
           </Link>
         </div>
       </div>

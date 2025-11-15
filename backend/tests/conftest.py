@@ -11,6 +11,11 @@ from sqlalchemy.pool import StaticPool
 from app.main import create_app
 from app.db.base import Base
 from app.db.session import get_db
+from app.core.deps import (
+    get_prereq_service,
+    get_wikipedia_client,
+)
+from app.services.prereq_service import PrerequisiteSuggestion, PrereqService
 
 
 TEST_DATABASE_URL = "sqlite://"
@@ -71,6 +76,28 @@ def client(db: Session) -> Generator[TestClient, None, None]:
             pass
 
     app.dependency_overrides[get_db] = _override_get_db
+
+    class _StubPrereqService(PrereqService):
+        async def generate_prerequisite_tree(self, *args, **kwargs):
+            return [
+                PrerequisiteSuggestion(
+                    name="Core Foundations",
+                    description="Review the fundamentals.",
+                    parent=None,
+                ),
+                PrerequisiteSuggestion(
+                    name="Advanced Topic",
+                    description="Build on the basics.",
+                    parent="Core Foundations",
+                ),
+            ]
+
+    class _StubWikiClient:
+        def fetch_summary(self, topic: str):
+            return f"Summary for {topic}", f"https://example.com/{topic.replace(' ', '_')}"
+
+    app.dependency_overrides[get_prereq_service] = lambda: _StubPrereqService()
+    app.dependency_overrides[get_wikipedia_client] = lambda: _StubWikiClient()
 
     with TestClient(app) as c:
         yield c
