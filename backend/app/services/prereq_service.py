@@ -9,7 +9,7 @@ from typing import List
 @dataclass
 class PrerequisiteSuggestion:
     name: str
-    description: str | None = None
+    description: str
     parent: str | None = None
 
 
